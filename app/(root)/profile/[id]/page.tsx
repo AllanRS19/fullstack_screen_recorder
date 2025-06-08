@@ -36,7 +36,7 @@ const page = async ({ params, searchParams }: ParamsWithSearch) => {
                 </section>
             ) : (
                 <EmptyState
-                    icon="/assets/icon/video.svg"
+                    icon="/assets/icons/video.svg"
                     title="No Videos Available Yet"
                     description="Videos will show up once you upload them"
                 />
