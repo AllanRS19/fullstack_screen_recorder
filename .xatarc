@@ -1,0 +1,6 @@
+{
+  "databaseURL": "https://Allan-Romero-s-workspace-ebsfkm.us-east-1.xata.sh/db/allan_snapcast",
+  "codegen": {
+    "output": "src/xata.ts"
+  }
+}
