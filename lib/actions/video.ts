@@ -9,7 +9,8 @@ import { user, videos } from "@/drizzle/schema";
 import { revalidatePath } from "next/cache";
 import aj from "../arcjet";
 import { fixedWindow, request } from "@arcjet/next";
-import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, desc, eq, ilike, ne, or, sql } from "drizzle-orm";
+import { PgColumn } from "drizzle-orm/pg-core";
 
 const { VIDEO_STREAM_BASE_URL, THUMBNAIL_STORAGE_BASE_URL, THUMBNAIL_CDN_URL } = BUNNY;
 
@@ -87,6 +88,21 @@ export const getVideoUploadUrl = withErrorHandling(async () => {
     }
 });
 
+export const getVideoProcessingStatus = withErrorHandling(
+    async (videoId: string) => {
+        const processingInfo = await apiFetch<BunnyVideoResponse>(
+            `${VIDEO_STREAM_BASE_URL}/${BUNNY_VIDEO_LIBRARY_ID}/videos/${videoId}`,
+            { bunnyType: "stream" }
+        );
+
+        return {
+            isProcessed: processingInfo.status === 4,
+            encodingProgress: processingInfo.encodeProgress || 0,
+            status: processingInfo.status,
+        };
+    }
+);
+
 export const getThumbnailUploadUrl = withErrorHandling(async (videoId: string) => {
     const fileName = `${Date.now()}-${videoId}-thumbnail`;
     const uploadUrl = `${THUMBNAIL_STORAGE_BASE_URL}/thumbnails/${fileName}`;
@@ -127,6 +143,25 @@ export const saveVideoDetails = withErrorHandling(async (videoDetails: VideoDeta
 
     return { videoId: videoDetails.videoId }
 });
+
+export const incrementVideoViews = withErrorHandling(
+    async (videoId: string) => {
+
+        const currentUserId = (
+            await auth.api.getSession({ headers: await headers() })
+        )?.user.id;
+
+
+        await db
+            .update(videos)
+            .set({ views: sql`${videos.views} + 1`, updatedAt: new Date() })
+            .where(and(eq(videos.videoId, videoId), ne<PgColumn>(videos.userId, currentUserId)));
+
+        revalidatePaths([`/video/${videoId}`]);
+
+        return {};
+    }
+);
 
 export const getAllVideos = withErrorHandling(async (
     searchQuery: string = "",
@@ -222,3 +257,66 @@ export const getAllVideosByUser = withErrorHandling(async (
     return { user: userInfo, videos: userVideos, count: userVideos.length };
 }
 );
+
+export const deleteVideo = withErrorHandling(async (videoId: string, thumbnailUrl: string) => {
+
+    console.log(`These was the information received: ${videoId}, ${thumbnailUrl}`);
+
+    // We make sure that the video exists in our database
+    const [foundVideo] = await db.select().from(videos).where(eq(videos.videoId, videoId));
+
+    if (!foundVideo) return new Error('There was an error finding the video. Please try again');
+
+    const [confirmThumbnail] = await db.select().from(videos).where(eq(foundVideo.thumbnailUrl, thumbnailUrl));
+
+    if (!confirmThumbnail) return new Error('This thumbnail does not belong to this video');
+
+    // We delete the video from bunny.net
+    await apiFetch(
+        `${VIDEO_STREAM_BASE_URL}/${BUNNY_VIDEO_LIBRARY_ID}/videos/${videoId}`,
+        { method: "DELETE", bunnyType: "stream" }
+    );
+
+    // Extract the thubmail file name & delete the thumbnail from bunny.net
+    const thumbnailPath = thumbnailUrl.split('thumbnails/')[1];
+    await apiFetch(
+        `${THUMBNAIL_STORAGE_BASE_URL}/thumbnails/${thumbnailPath}`,
+        { method: "DELETE", bunnyType: "storage", expectJson: false }
+    )
+
+    // Delete the video from the database
+    await db.delete(videos).where(eq(videos.videoId, videoId));
+    revalidatePaths(["/", `/videos/${videoId}`]);
+    
+    return {};
+
+});
+
+// This will be if I want to delete multiple videos
+// if (!videosIds || videosIds.length <= 0) return new Error('No videos were passed');
+
+// let allVideosFound = false;
+
+// for (let i = 0; i < videosIds.length; i++) {
+//     const [foundVideo] = await db.select().from(videos).where(eq(videos.videoId, videosIds[i]));
+//     if (!foundVideo) {
+//         allVideosFound = false;
+//         throw new Error('The video could not be found');
+//     }
+//     allVideosFound = true;
+// }
+
+// console.log(allVideosFound);
+
+// if (allVideosFound) {
+//     // Delete video from bunny.net
+//     for (let i = 0; i < videosIds.length; i++) {
+//         const deletedVideo = await apiFetch(
+//             `${VIDEO_STREAM_BASE_URL}/${BUNNY_VIDEO_LIBRARY_ID}/videos/${videosIds[i]}`,
+//             { method: "DELETE", bunnyType: "stream", expectJson: true }
+//         )
+//         if (!deletedVideo) return new Error('There was an error deleting a video');
+//     }
+
+//     return "All videos were deleted successfully";
+// }

@@ -645,7 +645,7 @@
         }
 
         .bar {
-          @apply w-px h-full bg-gray-25;
+          @apply w-px h-[34px] bg-gray-25;
         }
 
         .update-stats {

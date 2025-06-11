@@ -3,7 +3,7 @@ import Header from "@/components/Header";
 import VideoCard from "@/components/VideoCard";
 import { getAllVideos } from "@/lib/actions/video";
 
-const page = async ({ searchParams }: SearchParams) => {
+const Page = async ({ searchParams }: SearchParams) => {
 
     const { query, filter, page } = await searchParams;
 
@@ -27,7 +27,6 @@ const page = async ({ searchParams }: SearchParams) => {
                                 thumbnail={video.thumbnailUrl}
                                 userImg={user?.image || ''}
                                 username={user?.name || 'Guest'}
-
                             />
                         ))}
                     </section>
@@ -38,4 +37,4 @@ const page = async ({ searchParams }: SearchParams) => {
     )
 }
 
-export default page;
+export default Page;
