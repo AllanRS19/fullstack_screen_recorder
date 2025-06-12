@@ -267,9 +267,9 @@ export const deleteVideo = withErrorHandling(async (videoId: string, thumbnailUr
 
     if (!foundVideo) return new Error('There was an error finding the video. Please try again');
 
-    const [confirmThumbnail] = await db.select().from(videos).where(eq(foundVideo.thumbnailUrl, thumbnailUrl));
+    // const [confirmThumbnail] = await db.select().from(videos).where(eq(foundVideo.thumbnailUrl, thumbnailUrl));
 
-    if (!confirmThumbnail) return new Error('This thumbnail does not belong to this video');
+    // if (!confirmThumbnail) return new Error('This thumbnail does not belong to this video');
 
     // We delete the video from bunny.net
     await apiFetch(
@@ -288,7 +288,7 @@ export const deleteVideo = withErrorHandling(async (videoId: string, thumbnailUr
     await db.delete(videos).where(eq(videos.videoId, videoId));
     revalidatePaths(["/", `/videos/${videoId}`]);
     
-    return {};
+    return true;
 
 });
 
