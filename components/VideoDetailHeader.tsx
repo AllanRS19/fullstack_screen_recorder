@@ -1,14 +1,17 @@
 'use client';
 
-import { deleteVideo } from "@/lib/actions/video";
+import { deleteVideo, updateVideoVisibilityState } from "@/lib/actions/video";
 import { authClient } from "@/lib/auth-client";
 import { daysAgo } from "@/lib/utils";
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import DropdownList from "./DropdownList";
+import { visibilities } from "@/constants";
 
 const VideoDetailHeader = ({
+    id,
     title,
     createdAt,
     userImg,
@@ -27,6 +30,12 @@ const VideoDetailHeader = ({
 
     const [isDeleting, setIsDeleting] = useState(false);
     const [copied, setCopied] = useState(false);
+
+    const [visibilityState, setVisibilityState] = useState<Visibility>(
+        visibility as Visibility
+    );
+
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const handleCopyLink = () => {
         navigator.clipboard.writeText(`${window.location.origin}/video/${id}`)
@@ -52,6 +61,25 @@ const VideoDetailHeader = ({
         }
     }
 
+    const handleVisibilityChange = async (visibilityOption: string) => {
+        if (visibilityState !== visibilityOption) {
+            try {
+                setIsUpdating(true);
+
+                toast.promise(updateVideoVisibilityState(visibilityOption as Visibility, videoId), {
+                    loading: 'Updating video visibility...',
+                    success: `The video visibility was successfully updated to ${visibilityOption.toUpperCase()}`,
+                }).then(() => setVisibilityState(visibilityOption as Visibility));
+                
+            } catch (error) {
+                toast.error('There was an error while trying to modify the video visibility. Please try again.');
+                console.error('There was an error while trying to modify the video visibility: ', error);
+            } finally {
+                setIsUpdating(false);
+            }
+        }
+    }
+
     useEffect(() => {
         const changeChecked = setTimeout(() => {
             if (copied) setCopied(false);
@@ -59,6 +87,27 @@ const VideoDetailHeader = ({
 
         return () => clearTimeout(changeChecked);
     }, [copied]);
+
+    const TriggerVisibility = (
+        <div className="visibility-trigger">
+            <div>
+                <Image
+                    src="/assets/icons/eye.svg"
+                    alt="Views"
+                    width={16}
+                    height={16}
+                    className="mt-0.5"
+                />
+                <p>{visibilityState}</p>
+            </div>
+            <Image
+                src="/assets/icons/arrow-down.svg"
+                alt="Arrow Down"
+                width={16}
+                height={16}
+            />
+        </div>
+    )
 
     return (
         <div className="detail-header">
@@ -87,9 +136,18 @@ const VideoDetailHeader = ({
                             {isDeleting ? 'Deleting video...' : 'Delete video'}
                         </button>
                         <div className="bar" />
-                        <button className="delete-btn">
-                            Delete video
-                        </button>
+                        {isUpdating ? (
+                            <div className="upadate-stats">
+                                <p>Updating...</p>
+                            </div>
+                        ) : (
+                            <DropdownList
+                                options={visibilities}
+                                onOptionSelect={handleVisibilityChange}
+                                selectedOption={visibilityState}
+                                triggerElement={TriggerVisibility}
+                            />
+                        )}
                     </div>
                 )}
             </aside>

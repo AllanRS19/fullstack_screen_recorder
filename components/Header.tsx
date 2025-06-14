@@ -2,25 +2,96 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import DropdownList from "./DropdownList";
 import RecordScreen from "./RecordScreen";
-import { useEffect } from "react";
-import { deleteVideo } from "@/lib/actions/video";
+
+import { filterOptions } from "@/constants";
+import { updateURLParams } from "@/lib/utils";
+import useDebounce from "@/lib/hooks/useDebounce";
 
 const Header = ({ subHeader, title, userImg }: SharedHeaderProps) => {
 
-    // useEffect(() => {
-    //     const videosToDelete = async () => {
-    //         try {
-    //             const response = await deleteVideo('4d3e0d3d-4f63-4d69-b926-68bc6d4fc9f8', 'https://ars-snapcast.b-cdn.net/thumbnails/1749561766551-4d3e0d3d-4f63-4d69-b926-68bc6d4fc9f8-thumbnail');
-    //             console.log("This is the response: ", response);
-    //         } catch (error) {
-    //             console.error("This is an error: ", error);
-    //         }
-    //     }
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
-    //     videosToDelete();
-    // }, []);
+    const [searchQuery, setSearchQuery] = useState(
+        searchParams.get("query") || ""
+    );
+
+    const [selectedFilter, setSelectedFilter] = useState(
+        searchParams.get("filter") || "Most Recent"
+    );
+
+    const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+    // useEffect(() => {
+    //     const debouceTimer = setTimeout(() => {
+    //         if (searchQuery !== searchParams.get('query')) {
+    //             const url = updateURLParams(
+    //                 searchParams,
+    //                 { query: searchQuery || null },
+    //                 pathname
+    //             );
+
+    //             router.push(url);
+    //         }
+    //     }, 500);
+
+    //     return () => clearTimeout(debouceTimer);
+    // }, [searchQuery, searchParams, pathname, router]);
+
+    useEffect(() => {
+        setSearchQuery(searchParams.get("query") || "");
+        setSelectedFilter(searchParams.get("filter") || "Most Recent");
+    }, [searchParams]);
+
+    useEffect(() => {
+
+        const handleSearchQueryParam = async (query: string) => {
+            try {
+                
+                const urlWithQuery = updateURLParams(
+                    searchParams,
+                    { query: query || null },
+                    pathname
+                );
+
+                router.push(urlWithQuery);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        handleSearchQueryParam(debouncedSearchQuery);
+
+    }, [debouncedSearchQuery, searchParams, pathname, router]);
+
+    const handleFilterChange = (filter: string) => {
+
+        setSelectedFilter(filter);
+
+        const url = updateURLParams(
+            searchParams,
+            { filter: filter || null },
+            pathname
+        );
+
+        router.push(url);
+    }
+
+    const FilterElement = (
+        <div className="filter-trigger">
+            <figure>
+                <Image src="/assets/icons/hamburger.svg" alt="Menu" width={14} height={14} />
+                {selectedFilter}
+            </figure>
+            <Image src="/assets/icons/arrow-down.svg" alt="Arrow Down" width={20} height={20} />
+        </div>
+    )
 
     return (
         <header className="header">
@@ -50,11 +121,18 @@ const Header = ({ subHeader, title, userImg }: SharedHeaderProps) => {
                     <input
                         type="text"
                         placeholder="Search for videos, tags, folders..."
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        value={searchQuery}
                     />
                     <Image src="/assets/icons/search.svg" alt="Search" width={16} height={16} />
                 </div>
 
-                <DropdownList />
+                <DropdownList
+                    options={filterOptions}
+                    onOptionSelect={handleFilterChange}
+                    selectedOption={selectedFilter}
+                    triggerElement={FilterElement}
+                />
             </section>
         </header>
     )

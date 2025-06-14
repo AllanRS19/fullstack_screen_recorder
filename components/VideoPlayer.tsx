@@ -64,7 +64,7 @@ const VideoPlayer = ({ videoId, className }: VideoPlayerProps) => {
                     src={createIframeLink(videoId)}
                     loading='lazy'
                     title='Video player'
-                    style={{ border: 0, zIndex: 50 }}
+                    style={{ border: 0, zIndex: 40 }}
                     allowFullScreen
                     allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
                     onLoad={() => setState((prev) => ({ ...prev, isLoaded: true }))}

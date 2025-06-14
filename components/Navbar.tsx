@@ -4,8 +4,7 @@ import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
-
-const user = {};
+import toast from "react-hot-toast";
 
 const Navbar = () => {
 
@@ -29,6 +28,7 @@ const Navbar = () => {
                             <Image src={user.image || ""} alt="User" width={36} height={36} className="rounded-full aspect-square" />
                         </button>
                         <button className="cursor-pointer" onClick={async () => {
+                            toast.loading('Signing you out...');
                             return await authClient.signOut({
                                 fetchOptions: {
                                     onSuccess: () => {

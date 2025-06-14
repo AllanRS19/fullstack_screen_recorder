@@ -1,12 +1,36 @@
 import EmptyState from "@/components/EmptyState";
 import Header from "@/components/Header";
 import VideoCard from "@/components/VideoCard";
+import { getUserName } from "@/lib/actions/user";
 import { getAllVideosByUser } from "@/lib/actions/video";
+import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
+
+type MetadataProps = {
+    params: Promise<{ id: string }>;
+    parent?: ResolvingMetadata;
+}
+
+export async function generateMetadata({
+    params
+}: MetadataProps): Promise<Metadata> {
+
+    // Read route params
+    const { id } = await params;
+
+    const userName = await getUserName(id);
+
+    return {
+        title: `Profile - ${userName}`,
+        description: `Profile page of ${userName}`
+    }
+
+}
 
 const page = async ({ params, searchParams }: ParamsWithSearch) => {
 
     const { id } = await params;
+
     const { query, filter } = await searchParams;
 
     const { user, videos } = await getAllVideosByUser(id, query, filter);

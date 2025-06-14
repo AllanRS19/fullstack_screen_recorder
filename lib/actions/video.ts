@@ -287,9 +287,27 @@ export const deleteVideo = withErrorHandling(async (videoId: string, thumbnailUr
     // Delete the video from the database
     await db.delete(videos).where(eq(videos.videoId, videoId));
     revalidatePaths(["/", `/videos/${videoId}`]);
-    
+
     return true;
 
+});
+
+export const updateVideoVisibilityState = withErrorHandling(async (newVisibility: Visibility, videoId: string) => {
+    try {
+
+        const [findVideo] = await db.select().from(videos).where(eq(videos.videoId, videoId));
+        if (!findVideo) throw new Error('We could not find the video to update');
+
+        await db.update(videos).set({ visibility: newVisibility, updatedAt: new Date() }).where(eq(videos.videoId, videoId));
+
+        revalidatePaths(['/', `video/${findVideo.id}`]);
+
+        return {};
+
+    } catch (error) {
+        throw new Error('There was an error updating the video visibility state. Please try again');
+        console.error(error);
+    }
 });
 
 // This will be if I want to delete multiple videos

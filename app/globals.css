@@ -32,21 +32,18 @@
   --radius-20: 20px;
   --radius-18: 18px;
   --background-image-radial-100:
-    radial-gradient(
-      79.36% 59.94% at 101.94% -1.83%,
+    radial-gradient(79.36% 59.94% at 101.94% -1.83%,
       #ffe5f0 0%,
       #fff 42%,
-      rgba(0, 0, 0, 0) 42%
-    ),
-    radial-gradient(
-      60.29% 53.62% at 0% 100%,
+      rgba(0, 0, 0, 0) 42%),
+    radial-gradient(60.29% 53.62% at 0% 100%,
       #ffd8e9 0%,
       #fff 42%,
-      rgba(0, 0, 0, 0) 42%
-    );
+      rgba(0, 0, 0, 0) 42%);
 }
 
 @layer base {
+
   *,
   html,
   body {
@@ -72,9 +69,11 @@
   select::-ms-expand {
     display: none;
   }
+
   button {
     @apply cursor-pointer;
   }
+
   h1 {
     @apply -tracking-[2px];
   }
@@ -216,14 +215,22 @@
 
   /* dropdown */
   .dropdown {
-    @apply absolute bg-white shadow-lg rounded-lg flex flex-col gap-2 w-full z-10 top-12;
+    @apply absolute bg-white shadow-lg rounded-lg flex flex-col w-full z-10 top-12;
 
     .list-item {
-      @apply px-3 py-2.5 text-sm font-medium -tracking-[0.8px] relative text-dark-100 cursor-pointer hover:bg-pink-100 hover:text-white transition-colors duration-200 ease-in-out rounded-md;
+      @apply px-3 py-2.5 text-sm font-medium -tracking-[0.8px] relative text-dark-100 cursor-pointer hover:bg-pink-100 hover:text-white transition-colors duration-200 ease-in-out capitalize;
 
       img {
         @apply absolute right-3 top-1/2 -translate-y-1/2;
       }
+    }
+
+    .list-item:first-child {
+      @apply rounded-t-lg
+    }
+
+    .list-item:last-child {
+      @apply rounded-b-lg
     }
   }
 
@@ -299,6 +306,7 @@
       @apply border border-gray-20 rounded-18 text-dark-100 placeholder:text-gray-100 py-2.5 px-4.5 focus:outline-pink-100 placeholder:font-medium text-base font-semibold;
     }
   }
+
   /* navbar */
   .navbar {
     @apply h-[90px] border-b border-gray-20 flex items-center;
@@ -498,6 +506,7 @@
 
       div {
         @apply flex gap-2 justify-between;
+
         figure {
           @apply flex items-center gap-1.5;
 
@@ -513,6 +522,7 @@
             }
           }
         }
+
         aside {
           @apply flex items-center gap-1;
 
