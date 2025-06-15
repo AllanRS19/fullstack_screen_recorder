@@ -286,7 +286,7 @@ export const deleteVideo = withErrorHandling(async (videoId: string, thumbnailUr
 
     // Delete the video from the database
     await db.delete(videos).where(eq(videos.videoId, videoId));
-    revalidatePaths(["/", `/videos/${videoId}`]);
+    revalidatePaths(["/"]);
 
     return true;
 
