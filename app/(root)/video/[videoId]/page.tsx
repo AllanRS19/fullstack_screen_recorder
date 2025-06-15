@@ -2,7 +2,7 @@ import VideoDetailHeader from "@/components/VideoDetailHeader";
 import VideoPlayer from "@/components/VideoPlayer";
 import { getVideoById } from "@/lib/actions/video";
 import { Metadata, ResolvingMetadata } from "next";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 type MetadataProps = {
     params: Promise<{ videoId: string }>;
@@ -29,11 +29,13 @@ const page = async ({ params }: Params) => {
 
     const { videoId } = await params;
 
-    const { user, video } = await getVideoById(videoId);
+    const videoRecord = await getVideoById(videoId);
+
+    const { user, video } = videoRecord;
 
     console.log(video, user);
 
-    if (!video) redirect('/404');
+    if (!video) notFound();
 
     return (
         <main className="wrapper page">
