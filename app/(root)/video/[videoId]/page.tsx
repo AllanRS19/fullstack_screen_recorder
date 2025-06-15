@@ -31,9 +31,9 @@ const page = async ({ params }: Params) => {
 
     const videoRecord = await getVideoById(videoId);
 
-    const { user, video } = videoRecord;
+    if (!videoRecord) return redirect('/');
 
-    console.log(video, user);
+    const { user, video } = videoRecord;
 
     if (!video) notFound();
 
