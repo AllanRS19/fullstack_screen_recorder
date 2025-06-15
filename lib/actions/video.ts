@@ -12,7 +12,7 @@ import { fixedWindow, request } from "@arcjet/next";
 import { and, desc, eq, ilike, ne, or, sql } from "drizzle-orm";
 import { PgColumn } from "drizzle-orm/pg-core";
 
-const { VIDEO_STREAM_BASE_URL, THUMBNAIL_STORAGE_BASE_URL, THUMBNAIL_CDN_URL } = BUNNY;
+const { VIDEO_STREAM_BASE_URL, THUMBNAIL_STORAGE_BASE_URL, THUMBNAIL_CDN_URL, TRANSCRIPT_URL } = BUNNY;
 
 const BUNNY_VIDEO_LIBRARY_ID = getEnv('BUNNY_VIDEO_LIBRARY_ID');
 
@@ -112,6 +112,19 @@ export const getThumbnailUploadUrl = withErrorHandling(async (videoId: string) =
         uploadUrl,
         cdnUrl,
         accessKey: ACCESS_KEYS.storageAccessKey
+    }
+});
+
+export const getVideoTranscript = withErrorHandling(async (videoId: string) => {
+    try {
+        const response = await fetch(
+            `${TRANSCRIPT_URL}/${videoId}/captions/en-auto.vtt`
+        );
+
+        return response.text();
+    } catch (error) {
+        console.error("An error occurred: ", error);
+        throw new Error('There was an error while getting the video transcript');
     }
 });
 

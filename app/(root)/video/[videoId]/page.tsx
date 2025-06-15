@@ -1,6 +1,7 @@
 import VideoDetailHeader from "@/components/VideoDetailHeader";
+import VideoInfo from "@/components/VideoInfo";
 import VideoPlayer from "@/components/VideoPlayer";
-import { getVideoById } from "@/lib/actions/video";
+import { getVideoById, getVideoTranscript } from "@/lib/actions/video";
 import { Metadata, ResolvingMetadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
@@ -37,6 +38,8 @@ const page = async ({ params }: Params) => {
 
     if (!video) notFound();
 
+    const videoTranscript = await getVideoTranscript(videoId);
+
     return (
         <main className="wrapper page">
             <VideoDetailHeader {...video} userImg={user?.image} username={user?.name} ownerId={video.userId} />
@@ -44,6 +47,15 @@ const page = async ({ params }: Params) => {
                 <div className="content">
                     <VideoPlayer videoId={video.videoId} />
                 </div>
+
+                <VideoInfo 
+                    transcript={videoTranscript}
+                    title={video.title}
+                    createdAt={video.createdAt}
+                    description={video.description}
+                    videoId={videoId}
+                    id={video.id}
+                />
             </section>
         </main>
     )

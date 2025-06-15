@@ -267,7 +267,7 @@
 
   /* empty state */
   .empty-state {
-    @apply flex flex-col items-center px-4 py-10 gap-6 rounded-2xl border border-gray-20 shadow-10 w-full;
+    @apply flex flex-col items-center px-4 py-10 gap-6 rounded-2xl border border-gray-20 w-full;
 
     figure {
       @apply bg-pink-10 rounded-[20px] flex items-center justify-center size-20;
@@ -277,7 +277,7 @@
       @apply flex flex-col items-center gap-1.5;
 
       h1 {
-        @apply text-dark-100 text-2xl font-bold -tracking-[1px];
+        @apply text-dark-100 text-2xl font-bold -tracking-[1px] text-center;
       }
 
       p {

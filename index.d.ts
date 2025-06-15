@@ -98,6 +98,7 @@ declare interface VideoPlayerProps {
   className?: string;
 }
 declare interface VideoInfoProps {
+  id: string;
   transcript?: string;
   title: string;
   createdAt: Date;
