@@ -2,9 +2,9 @@ export const MAX_VIDEO_SIZE = 500 * 1024 * 1024;
 export const MAX_THUMBNAIL_SIZE = 10 * 1024 * 1024;
 
 export const BUNNY = {
-  THUMBNAIL_STORAGE_BASE_URL: "https://storage.bunnycdn.com/ars-snapcast",
-  THUMBNAIL_CDN_URL: "https://ars-snapcast.b-cdn.net",
-  TRANSCRIPT_URL: "https://vz-9ff07be0-fe7.b-cdn.net",
+  THUMBNAIL_STORAGE_BASE_URL: "https://ny.storage.bunnycdn.com/ars-snap-cast",
+  THUMBNAIL_CDN_URL: "https://ars-snap-cast.b-cdn.net",
+  TRANSCRIPT_URL: "https://vz-65d6adb2-1bd.b-cdn.net",
   EMBED_URL: "https://iframe.mediadelivery.net/embed",
   VIDEO_STREAM_BASE_URL: "https://video.bunnycdn.com/library",
 };

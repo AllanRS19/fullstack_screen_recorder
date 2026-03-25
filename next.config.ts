@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "ars-snapcast.b-cdn.net",
+        hostname: "ars-snap-cast.b-cdn.net",
         protocol: 'https',
         port: '',
         pathname: '/**'

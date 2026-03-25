@@ -164,6 +164,7 @@ export const incrementVideoViews = withErrorHandling(
             await auth.api.getSession({ headers: await headers() })
         )?.user.id;
 
+        console.log(currentUserId);
 
         await db
             .update(videos)

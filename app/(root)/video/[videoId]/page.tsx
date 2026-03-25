@@ -54,6 +54,7 @@ const page = async ({ params }: Params) => {
                     createdAt={video.createdAt}
                     description={video.description}
                     videoId={videoId}
+                    videoUrl={video.videoUrl}
                     id={video.id}
                 />
             </section>

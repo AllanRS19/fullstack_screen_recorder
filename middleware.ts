@@ -5,9 +5,11 @@ import aj from "./lib/arcjet";
 import { createMiddleware, detectBot, shield } from "@arcjet/next";
 
 export async function middleware(request: NextRequest) {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
+    // const session = await auth.api.getSession({
+    //     headers: await headers()
+    // });
+
+    const session = request.cookies.get("better-auth.session_token");
 
     if (!session) return NextResponse.redirect(new URL('/sign-in', request.url));
 

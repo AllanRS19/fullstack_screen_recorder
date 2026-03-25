@@ -11,7 +11,8 @@ const VideoInfo = ({
     createdAt,
     title,
     description,
-    videoId
+    videoId,
+    videoUrl
 }: VideoInfoProps) => {
 
     const [info, setInfo] = useState('transcript');
