@@ -130,4 +130,4 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to view the 
 ---
 
 ## Live Demo
-[Snap Cast]([Prepwise](https://ai-agent-interview-app.vercel.app))
+[Snap Cast](https://ai-agent-interview-app.vercel.app)
